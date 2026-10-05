@@ -1,0 +1,45 @@
+Provider: groq   Model: openai/gpt-oss-20b
+Commands: compress · tokens · state · sent · help · quit. Anything else is a message.
+
+you> assistant> Thanks for the details. Could you let me know your current GPA and income band (1 or 2)? Also, do you have your transcript and ID card on file with us?
+  [sent 294 tokens]
+you>   last call (turn): sent 294 tokens in 2 messages (tiktoken 220), got 71 back
+  next call would send ~257 tokens before your message (2 turns)
+  session so far: 294 tokens sent over 1 calls
+you> assistant> I need to check a few more details. Could you tell me your GPA and confirm whether you have both a transcript and an ID card on file with the office? Once I have that, I can see if you qualify.
+  [sent 348 tokens]
+you>   compressed: 4 messages replaced by the state object  (the compress call sent 833 tokens)
+{
+  "applicant_id": "A-202",
+  "topic": "availability and eligibility for grant interview",
+  "facts": [
+    "Daniyar Qoshan",
+    "A-202",
+    "I can only come on Thursdays",
+    "My income band is 2"
+  ],
+  "decisions": [],
+  "constraints": [
+    "I can only come on Thursdays"
+  ],
+  "open_questions": [],
+  "language": "English"
+}
+you>   last call (compress): sent 833 tokens in 2 messages (tiktoken 731), got 1453 back
+  next call would send ~305 tokens before your message (0 turns + state)
+  session so far: 1475 tokens sent over 3 calls
+you>   [system] You are the assistant of a university grant office, chatting with one applicant.
+
+The grant rule: An applicant qualifies when their GPA is at least 2.67 AND their income band is 1 or 2 AND they have b…
+  [system] Conversation state so far (the earlier turns were compressed into this and deleted):
+{
+ "applicant_id": "A-202",
+ "topic": "availability and eligibility for grant interview",
+ "facts": [
+  "Daniyar Qo…
+you> assistant> You can come on a Thursday. Let me know which Thursday works best for you, and we’ll confirm the interview time.
+  [sent 392 tokens]
+you>   last call (turn): sent 392 tokens in 3 messages (tiktoken 311), got 198 back
+  next call would send ~336 tokens before your message (2 turns + state)
+  session so far: 1867 tokens sent over 4 calls
+you> 

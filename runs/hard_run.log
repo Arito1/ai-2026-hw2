@@ -1,0 +1,192 @@
+Provider: groq   Model: qwen/qwen3.8-27b   rules: base + added
+
+=== Part 1 - extraction ===
+  story-01: parsed=True valid=True
+  story-02: parsed=True valid=True
+  story-03: parsed=True valid=True
+  story-04: parsed=True valid=True
+  story-05: parsed=True valid=True
+  story-06: parsed=True valid=True
+
+| Story | Parsed? | Valid? | Fields that came back null | Traps in the story | Trap checks (✓ handled / ✗ hit) and code flags |
+|---|---|---|---|---|---|
+| story-01 | yes | yes | none | none (control) | gpa_4_scale: want 3.8, got 3.8 ✓; published_count: want 2, got 2 ✓; experience months: want 8, got 8 ✓ · CODE FLAGS: quote not in story: published_count |
+| story-02 | yes | yes | graduation_year, gpa_4_scale, gpa_original, gpa_original_scale | no GPA stated | gpa_4_scale: want None, got None ✓; published_count: want 1, got 1 ✓; experience months: want 36, got 36 ✓ |
+| story-03 | yes | yes | none | GPA on another scale; unpublished paper | gpa_4_scale: want 3.68, got 3.68 ✓; published_count: want 1, got 1 ✓; experience months: want 14, got 14 ✓ · CODE FLAGS: quote not in story: experience_months_countable |
+| story-04 | yes | yes | none | unpublished paper | gpa_4_scale: want 3.6, got 3.6 ✓; published_count: want 1, got 1 ✓; experience months: want 24, got 24 ✓ |
+| story-05 | yes | yes | none | unpublished paper; story in Kazakh | gpa_4_scale: want 3.9, got 3.9 ✓; published_count: want 1, got 1 ✓; experience months: want 6, got 6 ✓ |
+| story-06 | yes | yes | graduation_year, gpa_4_scale, gpa_original | contradicts itself | gpa_4_scale: want None, got None ✓; published_count: want 1, got 1 ✓; experience months: want 40, got 40 ✓; graduation_year: want None, got None ✓; GPA contradiction in ambiguities: want True, got True ✓ |
+
+### Extraction for story-06 (the one that contradicts itself)
+
+{
+  "candidate_id": "story-06",
+  "full_name": "Nurzhan Abilov",
+  "degree": "BSc in Statistics",
+  "graduation_year": null,
+  "gpa_4_scale": null,
+  "gpa_original": null,
+  "gpa_original_scale": 4.0,
+  "languages": [
+    "Kazakh",
+    "Russian",
+    "English"
+  ],
+  "published_outputs": [
+    {
+      "title": null,
+      "venue": "peer-reviewed proceedings",
+      "year": null,
+      "peer_reviewed": true
+    }
+  ],
+  "published_count": 1,
+  "unpublished_outputs": [
+    {
+      "title": null,
+      "status": "not_a_publication"
+    }
+  ],
+  "experience_periods": [
+    {
+      "role": "insurance analytics team",
+      "start": "February 2023",
+      "end": null,
+      "months": 40,
+      "countable": true
+    }
+  ],
+  "experience_months_countable": 40,
+  "ambiguities": [
+    "GPA contradiction: story states 'My GPA was 3.2' but also 'I think it was 3.5'",
+    "Graduation year contradiction: story states 'I graduated in 2024' but also 'graduating in 2026'",
+    "Duration approximation: story states the work period is 'about forty months'"
+  ],
+  "evidence": {
+    "full_name": "Nurzhan Abilov",
+    "degree": "BSc in Statistics",
+    "graduation_year": null,
+    "gpa": null,
+    "languages": "Kazakh, Russian, English.",
+    "published_count": "one paper published",
+    "experience_months_countable": "about forty months"
+  }
+}
+
+=== Part 2 - scores (model) and totals (code) ===
+  story-01: {'academic': 5, 'research': 5, 'experience': 3}
+  story-02: {'academic': 2, 'research': 1, 'experience': 4}
+  story-03: {'academic': 4, 'research': 3, 'experience': 4}
+  story-04: {'academic': 4, 'research': 2, 'experience': 5}
+  story-05: {'academic': 5, 'research': 3, 'experience': 2}
+  story-06: {'academic': 0, 'research': 2, 'experience': 5}
+
+| Candidate | academic (0–5) | research (0–5) | experience (0–5) | total on the model's scores | weighted total (code, rules enforced) |
+|---|---|---|---|---|---|
+| story-01 | 5 | 5 | 3 | 4.60 | 4.60 |
+| story-02 | 0 (model: 2) | 1 | 5 (model: 4) | 2.10 | 1.30 |
+| story-03 | 4 | 3 | 4 | 3.70 | 3.70 |
+| story-04 | 4 | 2 | 5 | 3.60 | 3.60 |
+| story-05 | 5 | 3 | 2 | 3.80 | 3.80 |
+| story-06 | 0 | 2 | 5 | 1.60 | 1.60 |
+
+Overrides made by the code (counting rules the model broke):
+  story-01: none
+  story-02: academic 2→0 (no usable GPA: 'a story with no GPA scores 0 on academic'); experience 4→5 (36 months >= 24)
+  story-03: none
+  story-04: none
+  story-05: none
+  story-06: none
+
+Ranking on the model's raw scores: story-01 4.60 > story-05 3.80 > story-03 3.70 > story-04 3.60 > story-02 2.10 > story-06 1.60
+Ranking (code, rules enforced):   story-01 4.60 > story-05 3.80 > story-03 3.70 > story-04 3.60 > story-06 1.60 > story-02 1.30
+
+**Winner, computed by my code:** story-01 (Aziza Bekova), weighted total 4.60
+Gap to second (story-05): 0.80
+
+Model notes per candidate:
+  story-01: The candidate's GPA is 3.8 on a 4.0 scale, meeting the 3.7+ threshold for a 5 in academic record. They have exactly two peer-reviewed publications, satisfying the condition for a 5 in research. They have 8 months of directly relevant experience; while this is significant, it is less than the two years (24 months) specified for a 5, placing them mid-range on the 0-5 scale. Using a linear interpolation (8/24 * 5), this corresponds to a score of approximately 3.
+  story-02: Academic record is only partially stated (degree without GPA), so the score sits between the 0 anchor and the 5 anchor, leaning lower since no grades were provided. Research output includes one published item, which is about halfway to the two-publications threshold for a 5. Experience is 36 countable months (three years) of directly relevant work, which meets the duration requirement for a 5, but the part-time nature noted in the ambiguities slightly reduces the weight, placing it just below the top score.
+  story-03: Academic score is 4 because the GPA is 3.68/4.0, just below the 3.7 threshold for a 5. Research is 3 for one published peer-reviewed output, halfway between 0 (none) and 5 (two or more). Experience is 4 for 14 countable months, approaching but not reaching the 24-month threshold for a 5.
+  story-04: Academic score is 4 because the 3.6 GPA is strong but slightly below the 3.7 threshold for a 5. Research is 2 based on having exactly one published output, placing it lower than the 5-point anchor of two or more publications. Experience scores 5 because the candidate has 24 countable months of relevant work, meeting the 'two years or more' criterion.
+  story-05: Academic: Degree and GPA (3.9/4.0) are clearly stated, meeting the 'strong' criteria for a 5. Research: 1 published peer-reviewed output; scaled up from 0 (none) to 5 (2+), 1 output gets 3. Experience: 6 months of internship. Scaled up from 0 (none) to 5 (24+ months), 6 months gets 2.
+  story-06: Academic is 0 because the story contradicts itself regarding GPA (3.2 vs 3.5), making that field null and not countable under the provided rules. Research is 2, reflecting one confirmed peer-reviewed publication, which constitutes half the 5-point criterion. Experience is 5 because 40 countable months of directly relevant work exceeds the 24-month threshold.
+
+=== The model's prose answer, asked separately ===
+
+Based on the strict application of the provided rubric and counting rules, **Lyazzat Omarova** (story-03) is the winner.
+
+**Academic Record (Weight: 0.5):**
+The rubric specifies that a score of 5 requires a GPA at or above 3.7 on a 4.0 scale or an *equivalent* record. Lyazzat’s GPA is 4.6/5.0. Converting this to a 4.0 scale: $(4.6/5.0) * 4.0 = 3.68$. This is technically slightly below 3.7. However, looking at the other candidates:
+*   Aziza (story-01): 3.8/4.0. This is explicitly above the benchmark.
+*   Nurzhan (story-06): Has a contradiction between 3.2 and 3.5. Per the rules, the field is null, and the marker decides. However, even taking the higher value of 3.5, it is below 3.7.
+*   Aisha (story-05): 3.9/4.0. Explicitly above the benchmark.
+*   Tamerlan (story-04): 3.6/4.0. Below the benchmark.
+*   Dias (story-02): No GPA stated. Score is 0.
+
+While Lyazzat's converted GPA (3.68) is marginally under 3.7, in absolute terms it is the highest academic achievement relative to her scale. However, let's look at the tie-breakers and other criteria to see if this marginal difference matters. If we strictly apply "at or above 3.7", Lyazzat might score <5, whereas Aziza and Aisha score 5. Let's calculate the total weighted scores to be precise.
+
+*   **Aziza (story-01):**
+    *   Academic: 3.8/4.0. Score: **5**. (Weight: 0.5 -> 2.5)
+    *   Research: 2 published papers. Score: **5**. (Weight: 0.3 -> 1.5)
+    *   Experience: 8 months. The max score of 5 requires "two years or more". 8 months is significantly less. On a 0-5 scale, 24 months is 5. 8 months is $8/24 = 1/3$ of the time. Let's estimate proportionally or based on the gap. If 0 is none and 5 is 24+, 8 months is likely a **2** or **2.5**. Let's be conservative and say **2**. (Weight: 0.2 -> 0.4)
+    *   Total: $2.5 + 1.5 + 0.4 = 4.4$
+
+*   **Lyazzat (story-03):**
+    *   Academic: 4.6/5.0. Converted to 3.68. Is this "strong"? The rubric says "a 4.0-scale GPA at or above 3.7, **or an equivalent record stated on another scale**". A 4.6/5.0 is an A/A+ performance. While 3.68 is technically <3.7, it is the highest *magnitude* of academic success here. However, if we must be literal about the 3.7 threshold, she might not get a 5. But usually, "equivalent record" implies a top-tier record. Let's assume she gets a **5** for having the highest grade point equivalent (4.6/5.0 is distinctively excellent). If she gets a **4** (just below 5), we will see the difference.
+    *   Research: 1 published (2024). The second is "under review" and does not count. So, only **1** published paper. The rubric says 5 means "two or more". So 1 published paper is definitely not a 5. It is likely a **3** or **4**. Let's say **3** (one solid paper).
+    *   Experience: 9 months + 5 months = 14 months. No overlap. Still less than 24 months. Similar to Aziza, this is likely a **3** or **4**. Let's say **3**.
+    *   Total (assuming Academic 5, Research 3, Exp 3): $2.5 + 0.9 + 0.6 = 4.0$.
+    *   Total (assuming Academic 4, Research 3, Exp 3): $2.0 + 0.9 + 0.6 = 3.5$.
+    *   Aziza (4.4) clearly beats Lyazzat on this calculation because Aziza has **two** published papers, which secures the full research score, and her GOPA is explicitly on the 4.0 scale and >3.7.
+
+*   **Aisha (story-05):**
+    *   Academic: 3.9/4.0. Score: **5**. (Weight: 0.5 -> 2.5)
+    *   Research: 1 published paper. The other is "being written" / not submitted. Does not count. Score: **3** (similar to Lyazzat). (Weight: 0.3 -> 0.9)
+    *   Experience: 6 months internship. Below 24 months. Score: **1** or **2**. Let's say **2**. (Weight: 0.2 -> 0.4)
+    *   Total: $2.5 + 0.9 + 0.4 = 3.8$.
+
+*   **Tamerlan (story-04):**
+    *   Academic: 3.6/4.0. Below 3.7. Score: **4**. (Weight: 0.5 -> 2.0)
+    *   Research: 1 published. One under review, two in prep. Do not count. Score: **3**. (Weight: 0.3 -> 0.9)
+    *   Experience: 24 months (Sep 2023 to Sep 2025). This meets the "two years or more" threshold. Score: **5**. (Weight: 0.2 -> 1.0)
+    *   Total: $2.0 + 0.9 + 1.0 = 3.9$.
+
+*   **Nurzhan (story-06):**
+    *   Academic: Contradiction (3.2 vs 3.5). Null/Decided by marker. Even at 3.5, it's below 3.7. Let's assume a score of **3** (low threes). (Weight: 0.5 -> 1.5)
+    *   Research: 1 published. Score: **3**. (Weight: 0.3 -> 0.9)
+    *   Experience: 40 months. >24 months. Score: **5**. (Weight: 0.2 -> 1.0)
+    *   Total: $1.5 + 0.9 + 1.0 = 3.4$.
+
+*   **Dias (story-02):**
+    *   Academic: No GPA. Score: **0**. (Weight: 0.5 -> 0.0)
+    *   Research: 1 published. Score: **3**. (Weight: 0.3 -> 0.9)
+    *   Experience: 36 months. >24 months. Score: **5**. (Weight: 0.2 -> 1.0)
+    *   Total: $0.0 + 0.9 + 1.0 = 1.9$.
+
+**Re-evaluating Aziza vs. Others:**
+Aziza has the highest Academic score (5) and the highest Research score (5, because she has 2 published papers).
+Even if her experience score is the lowest (8 months is quite short), she dominates the two most weighted fields.
+Aziza Total: **4.4** (depending on exact exp scaling, but clearly highest).
+
+Let's double check if anyone else can beat her.
+Tamerlan has better experience (5 vs Aziza's ~2), but his Academic (4) and Research (3) are both lower than Aziza's (5 and 5).
+(Aziza Res: 5, Tam Res: 3 -> diff of 1 * 0.3 = 0.3)
+(Aziza Acad: 5, Tam Acad: 4 -> diff of 1 * 0.5 = 0.5)
+Combined, Aziza is 0.8 points ahead in weighted value before even counting experience.
+Tam has 5 units of experience, Aziza has ~2. Diff 3 * 0.2 = 0.6 points.
+So Aziza is still ahead by 0.2 points on Tamerlan.
+And Aziza is significantly ahead of Aisha (who has only 1 paper and 6 months exp).
+
+Therefore, **Aziza Bekova** is the strongest candidate.
+
+**Second Place:**
+Tamerlan Saparov comes second with a total estimated score of 3.9, trailing Aziza primarily due to having only one *published* peer-reviewed output (limiting his research score) and a GPA below the 3.7 threshold (limiting his academic score), despite having the maximum relevant experience.
+
+**Recommendation:**
+
+The funded place should be awarded to **Aziza Bekova**. She secures the maximum score in the two most heavily weighted categories: Academic Record and Research Output. Her GPA of 3.8 on a 4.0 scale meets the top-tier academic threshold, and she is the only candidate with two explicitly published peer-reviewed outputs, which guarantees the full mark in the Research category. While her relevant work experience is the shortest among the top contenders (eight months), her dominance in the Academic (weight 0.5) and Research (weight 0.3) fields allows her to outperform other strong candidates like Tamerlan Saparov, who has superior experience but lacks the second published paper and a slightly lower GPA.
+
+**Tamerlan Saparov** comes second. He demonstrates excellent relevant experience with 24 months of continuous work and a solid academic record, but his research profile contains only one published paper (with the others under review or in preparation), causing him to lose significant points in the weighted research category that Aziza earned.
+
+Saved outputs/hard_results.json

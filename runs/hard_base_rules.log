@@ -1,0 +1,20 @@
+Provider: groq   Model: qwen/qwen3.8-27b   rules: base only
+
+=== Part 1 - extraction ===
+  story-01: parsed=True valid=True
+  story-02: parsed=True valid=True
+  story-03: parsed=True valid=True
+  story-04: parsed=True valid=True
+  story-05: parsed=True valid=True
+  story-06: parsed=True valid=True
+
+| Story | Parsed? | Valid? | Fields that came back null | Traps in the story | Trap checks (✓ handled / ✗ hit) and code flags |
+|---|---|---|---|---|---|
+| story-01 | yes | yes | none | none (control) | gpa_4_scale: want 3.8, got 3.8 ✓; published_count: want 2, got 2 ✓ |
+| story-02 | yes | yes | graduation_year, gpa_4_scale, gpa_original, gpa_original_scale | no GPA stated | gpa_4_scale: want None, got None ✓; published_count: want 1, got 1 ✓ · CODE FLAGS: quote not in story: languages |
+| story-03 | yes | yes | none | GPA on another scale; unpublished paper | gpa_4_scale: want 3.68, got 3.68 ✓; published_count: want 1, got 1 ✓ · CODE FLAGS: quote not in story: experience_months_countable |
+| story-04 | yes | yes | none | unpublished paper | gpa_4_scale: want 3.6, got 3.6 ✓; published_count: want 1, got 1 ✓ |
+| story-05 | yes | yes | none | unpublished paper; story in Kazakh | gpa_4_scale: want 3.9, got 3.9 ✓; published_count: want 1, got 1 ✓ |
+| story-06 | yes | yes | graduation_year, gpa_4_scale, gpa_original | contradicts itself | gpa_4_scale: want None, got None ✓; published_count: want 1, got 1 ✓; graduation_year: want None, got None ✓; GPA contradiction in ambiguities: want True, got True ✓ |
+
+Saved outputs/hard_extraction_base_rules.json (scoring skipped in this mode)

@@ -1,0 +1,147 @@
+Provider: groq   Model: openai/gpt-oss-120b
+
+  policy_officer   E-01: decision=granted  agrees=True
+  policy_officer   E-02: decision=more_info  agrees=True
+  policy_officer   E-03: decision=refused  agrees=True
+  policy_officer   E-04: decision=refused  agrees=True
+  policy_officer   E-05: decision=granted  agrees=True
+  policy_officer   E-06: decision=granted  agrees=True
+  policy_officer   E-07: decision=granted  agrees=True
+  policy_officer   E-08: decision=not_found  agrees=True
+  policy_officer   E-09: decision=refused  agrees=True
+  policy_officer   E-10: decision=more_info  agrees=True
+  front_desk       E-01: decision=granted  agrees=True
+  front_desk       E-02: decision=more_info  agrees=True
+  front_desk       E-03: decision=refused  agrees=True
+  front_desk       E-04: decision=refused  agrees=True
+  front_desk       E-05: decision=granted  agrees=True
+  front_desk       E-06: decision=granted  agrees=True
+  front_desk       E-07: decision=granted  agrees=True
+  front_desk       E-08: decision=not_found  agrees=True
+  front_desk       E-09: decision=refused  agrees=True
+  front_desk       E-10: decision=more_info  agrees=True
+  auditor          E-01: decision=more_info  agrees=False
+  auditor          E-02: decision=more_info  agrees=True
+  auditor          E-03: decision=refused  agrees=True
+  auditor          E-04: decision=refused  agrees=True
+  auditor          E-05: decision=more_info  agrees=False
+  auditor          E-06: decision=more_info  agrees=False
+  auditor          E-07: decision=more_info  agrees=False
+  auditor          E-08: decision=not_found  agrees=True
+  auditor          E-09: decision=refused  agrees=True
+  auditor          E-10: decision=more_info  agrees=True
+  bilingual_clerk  E-01: decision=granted  agrees=True
+  bilingual_clerk  E-02: decision=more_info  agrees=True
+  bilingual_clerk  E-03: decision=refused  agrees=True
+  bilingual_clerk  E-04: decision=refused  agrees=True
+  bilingual_clerk  E-05: decision=granted  agrees=True
+  bilingual_clerk  E-06: decision=granted  agrees=True
+  bilingual_clerk  E-07: decision=granted  agrees=True
+  bilingual_clerk  E-08: decision=not_found  agrees=True
+  bilingual_clerk  E-09: decision=refused  agrees=True
+  bilingual_clerk  E-10: decision=more_info  agrees=True
+
+### policy_officer
+
+| Enquiry | parsed | schema-valid | found | decision | amount | missing_documents | agrees with expected |
+|---|---|---|---|---|---|---|---|
+| E-01 | yes | yes | True | granted | 250000 | [] | yes |
+| E-02 | yes | yes | True | more_info | 0 | ['id_card'] | yes |
+| E-03 | yes | yes | True | refused | 0 | [] | yes |
+| E-04 | yes | yes | True | refused | 0 | [] | yes |
+| E-05 | yes | yes | True | granted | 250000 | [] | yes |
+| E-06 | yes | yes | True | granted | 150000 | [] | yes |
+| E-07 | yes | yes | True | granted | 250000 | [] | yes |
+| E-08 | yes | yes | False | not_found | 0 | [] | yes |
+| E-09 | yes | yes | True | refused | 0 | [] | yes |
+| E-10 | yes | yes | True | more_info | 0 | ['id_card'] | yes |
+
+agrees 10/10 · parsed 10/10 · schema-valid 10/10
+
+### front_desk
+
+| Enquiry | parsed | schema-valid | found | decision | amount | missing_documents | agrees with expected |
+|---|---|---|---|---|---|---|---|
+| E-01 | yes | yes | True | granted | 250000 | [] | yes |
+| E-02 | yes | yes | True | more_info | 0 | ['id_card'] | yes |
+| E-03 | yes | yes | True | refused | 0 | [] | yes |
+| E-04 | yes | yes | True | refused | 0 | [] | yes |
+| E-05 | yes | yes | True | granted | 250000 | [] | yes |
+| E-06 | yes | yes | True | granted | 150000 | [] | yes |
+| E-07 | yes | yes | True | granted | 250000 | [] | yes |
+| E-08 | yes | yes | False | not_found | 0 | [] | yes |
+| E-09 | yes | yes | True | refused | 0 | [] | yes |
+| E-10 | yes | yes | True | more_info | 0 | ['id_card'] | yes |
+
+agrees 10/10 · parsed 10/10 · schema-valid 10/10
+
+### auditor
+
+| Enquiry | parsed | schema-valid | found | decision | amount | missing_documents | agrees with expected |
+|---|---|---|---|---|---|---|---|
+| E-01 | yes | yes | True | more_info | 0 | [] | NO (decision, amount) |
+| E-02 | yes | yes | True | more_info | 0 | ['id_card'] | yes |
+| E-03 | yes | yes | True | refused | 0 | [] | yes |
+| E-04 | yes | yes | True | refused | 0 | [] | yes |
+| E-05 | yes | yes | True | more_info | 0 | [] | NO (decision, amount) |
+| E-06 | yes | yes | True | more_info | 0 | [] | NO (decision, amount) |
+| E-07 | yes | yes | True | more_info | 0 | [] | NO (decision, amount) |
+| E-08 | yes | yes | False | not_found | 0 | [] | yes |
+| E-09 | yes | yes | True | refused | 0 | [] | yes |
+| E-10 | yes | yes | True | more_info | 0 | ['id_card'] | yes |
+
+agrees 6/10 · parsed 10/10 · schema-valid 10/10
+
+### bilingual_clerk
+
+| Enquiry | parsed | schema-valid | found | decision | amount | missing_documents | agrees with expected |
+|---|---|---|---|---|---|---|---|
+| E-01 | yes | yes | True | granted | 250000 | [] | yes |
+| E-02 | yes | yes | True | more_info | 0 | ['id_card'] | yes |
+| E-03 | yes | yes | True | refused | 0 | [] | yes |
+| E-04 | yes | yes | True | refused | 0 | [] | yes |
+| E-05 | yes | yes | True | granted | 250000 | [] | yes |
+| E-06 | yes | yes | True | granted | 150000 | [] | yes |
+| E-07 | yes | yes | True | granted | 250000 | [] | yes |
+| E-08 | yes | yes | False | not_found | 0 | [] | yes |
+| E-09 | yes | yes | True | refused | 0 | [] | yes |
+| E-10 | yes | yes | True | more_info | 0 | ['id_card'] | yes |
+
+agrees 10/10 · parsed 10/10 · schema-valid 10/10
+
+### Decisions per role (✓ = agrees with expected on all four fields)
+
+| Enquiry | policy_officer | front_desk | auditor | bilingual_clerk |
+|---|---|---|---|---|
+| E-01 | granted ✓ | granted ✓ | more_info ✗ | granted ✓ |
+| E-02 | more_info ✓ | more_info ✓ | more_info ✓ | more_info ✓ |
+| E-03 | refused ✓ | refused ✓ | refused ✓ | refused ✓ |
+| E-04 | refused ✓ | refused ✓ | refused ✓ | refused ✓ |
+| E-05 | granted ✓ | granted ✓ | more_info ✗ | granted ✓ |
+| E-06 | granted ✓ | granted ✓ | more_info ✗ | granted ✓ |
+| E-07 | granted ✓ | granted ✓ | more_info ✗ | granted ✓ |
+| E-08 | not_found ✓ | not_found ✓ | not_found ✓ | not_found ✓ |
+| E-09 | refused ✓ | refused ✓ | refused ✓ | refused ✓ |
+| E-10 | more_info ✓ | more_info ✓ | more_info ✓ | more_info ✓ |
+| **agrees with `expected`** | 10/10 | 10/10 | 6/10 | 10/10 |
+| **parsed** | 10/10 | 10/10 | 10/10 | 10/10 |
+| **schema-valid** | 10/10 | 10/10 | 10/10 | 10/10 |
+
+### Which field moved away from policy_officer, on which enquiry, under which role
+
+| Field | Enquiries that moved | Role(s) that moved it |
+|---|---|---|
+| `found` | none | no role moved this field on any enquiry |
+| `decision` | E-01, E-05, E-06, E-07 | E-01: auditor (granted → more_info); E-05: auditor (granted → more_info); E-06: auditor (granted → more_info); E-07: auditor (granted → more_info) |
+| `amount` | E-01, E-05, E-06, E-07 | E-01: auditor (250000 → 0); E-05: auditor (250000 → 0); E-06: auditor (150000 → 0); E-07: auditor (250000 → 0) |
+| `missing_documents` | none | no role moved this field on any enquiry |
+
+### Moves per role (enquiries where a field differs from policy_officer)
+
+| Role | found | decision | amount | missing_documents |
+|---|---|---|---|---|
+| front_desk | 0 | 0 | 0 | 0 |
+| auditor | 0 | 4 | 4 | 0 |
+| bilingual_clerk | 0 | 0 | 0 | 0 |
+
+Raw replies saved to outputs/easy_results.json

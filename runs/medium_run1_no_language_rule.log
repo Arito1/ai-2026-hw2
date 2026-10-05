@@ -1,0 +1,100 @@
+Provider: groq   Model: openai/gpt-oss-120b
+
+=== Run A (never compressed) ===
+   1. sent   282 tokens (2 messages)  Сәлеметсіз бе! My name is Daniyar Qoshan, applicant A-202.
+   2. sent   374 tokens (4 messages)  I sent my transcript last week. Do I qualify for the study g
+   3. sent   453 tokens (6 messages)  My income band is 2 - my family's certificate says so.
+   4. sent   536 tokens (8 messages)  So how much would that come to, if it goes through?
+   5. sent   622 tokens (10 messages)  I could not upload my id card because the scanner at home br
+   6. sent   758 tokens (12 messages)  I can only come to the office on Thursdays, I have lab all w
+   7. sent   918 tokens (14 messages)  Also, does a scanned letter from my employer count, or does 
+   8. sent  1052 tokens (16 messages)  Understood. And if I bring the id card on Thursday, will the
+   9. sent  1179 tokens (18 messages)  One more thing - my sister Aruzhan applied last year and she
+  10. <compress> skipped
+  11. sent  1312 tokens (20 messages)  Sorry, where were we? What is still missing from my file?
+  12. sent  1412 tokens (22 messages)  And what was the amount again?
+  probe Q-1: LOST  (1477 tokens)  'Сіз – Daniyar Qoshan, өтініш нөмірі\u202fA‑202.'
+  probe Q-2: LOST  (1475 tokens)  'Сіздің файлда GPA туралы мәлімет (2,67‑ден жоғары болуы керек) және жеке куәлік әлі жоқ. Б'
+  probe Q-3: RETRIEVED  (1480 tokens)  'Сіздің табыс тобыңыз\u202f2‑ші, сондықтан грант сомасы 150\u202f000\u202fтеңге болады (GPA\u202f≥\u202f2,67 және же'
+  probe Q-4: LOST  (1478 tokens)  'Сіз айтқандай, бейсенбі күндері ғана келуге болады. Қажетті құжаттарды сол күні әкелсеңіз,'
+  probe Q-5: LOST  (1475 tokens)  'Сіз жұмыс берушіден алынған хаттың скан нұсқасы жарамды ма, әлде түпнұсқа болуы керек пе д'
+
+=== Run B (compressed) ===
+   1. sent   282 tokens (2 messages)  Сәлеметсіз бе! My name is Daniyar Qoshan, applicant A-202.
+   2. sent   369 tokens (4 messages)  I sent my transcript last week. Do I qualify for the study g
+   3. sent   464 tokens (6 messages)  My income band is 2 - my family's certificate says so.
+   4. sent   549 tokens (8 messages)  So how much would that come to, if it goes through?
+   5. sent   675 tokens (10 messages)  I could not upload my id card because the scanner at home br
+   6. sent   755 tokens (12 messages)  I can only come to the office on Thursdays, I have lab all w
+   7. sent   889 tokens (14 messages)  Also, does a scanned letter from my employer count, or does 
+   8. sent  1021 tokens (16 messages)  Understood. And if I bring the id card on Thursday, will the
+   9. sent  1143 tokens (18 messages)  One more thing - my sister Aruzhan applied last year and she
+  10. <compress> sent 1652 tokens -> compressed: 18 messages replaced by the state object
+  11. sent   525 tokens (3 messages)  Sorry, where were we? What is still missing from my file?
+  12. sent   618 tokens (5 messages)  And what was the amount again?
+  probe Q-1: LOST  (680 tokens)  'You are applicant\u202fA‑202 in our system. Your record is listed under that number.'
+  probe Q-2: RETRIEVED  (678 tokens)  'The only required document we still don’t have is your\u202fID card\u202f— it must be presented in p'
+  probe Q-3: RETRIEVED  (683 tokens)  'Your recorded income band is\u202f2, which corresponds to a grant of\u202f150\u202f000\u202ftenge.'
+  probe Q-4: RETRIEVED  (681 tokens)  'You can visit the office on **Thursday**. That’s the only day you indicated as available.'
+  probe Q-5: RETRIEVED  (678 tokens)  'You haven’t mentioned anything about your employer in the information you’ve provided, so '
+
+### Tokens per call (usage.prompt_tokens from the provider; tiktoken o200k count in brackets)
+
+| Call | A — never compressed | B — compressed at the `compress` turn |
+|---|---|---|
+| 1 | 282 (208) | 282 (208) |
+| 2 | 374 (290) | 369 (285) |
+| 3 | 453 (359) | 464 (370) |
+| 4 | 536 (432) | 549 (445) |
+| 5 | 622 (508) | 675 (561) |
+| 6 | 758 (634) | 755 (631) |
+| 7 | 918 (784) | 889 (755) |
+| 8 | 1052 (908) | 1021 (877) |
+| 9 | 1179 (1025) | 1143 (989) |
+| 10 | — (`compress` skipped) | 1652 (1550) — the compress call |
+| 11 | 1312 (1148) | 525 (444) |
+| 12 | 1412 (1238) | 618 (527) |
+| **peak** | 1412 | 1652 |
+| **total for the run** | 8898 | 8942 |
+| probes (5 calls, total) | 7385 | 3400 |
+
+After the compress point (calls 11-12): A [1312, 1412]  B [525, 618]
+
+### Probes after the conversation
+
+| Probe | Tests | A retrieved? | A answer | B retrieved? | B answer |
+|---|---|---|---|---|---|
+| Q-1 | identity, stated once in turn 1 | **no** | Сіз – Daniyar Qoshan, өтініш нөмірі A‑202. | **no** | You are applicant A‑202 in our system. Your record is listed under that number. |
+| Q-2 | the missing document, turn 5 | **no** | Сіздің файлда GPA туралы мәлімет (2,67‑ден жоғары болуы керек) және жеке куәлік әлі жоқ. Бұл екі құжат толық болғанда, 2‑ші табыс тобы үшін 150 000 теңге грантқа сәйкес боласыз. | yes | The only required document we still don’t have is your ID card — it must be presented in person at the office (on a Thursday). Once we register that, your file will be complete. |
+| Q-3 | the band from turn 3 and the amount from turn 4 | yes | Сіздің табыс тобыңыз 2‑ші, сондықтан грант сомасы 150 000 теңге болады (GPA ≥ 2,67 және жеке куәлік тіркелген жағдайда). | yes | Your recorded income band is 2, which corresponds to a grant of 150 000 tenge. |
+| Q-4 | a constraint the applicant stated in turn 6 and never repeated | **no** | Сіз айтқандай, бейсенбі күндері ғана келуге болады. Қажетті құжаттарды сол күні әкелсеңіз, тіркеу процесін жалғастырамыз. | yes | You can visit the office on **Thursday**. That’s the only day you indicated as available. |
+| Q-5 | an open question, turn 7, never answered | **no** | Сіз жұмыс берушіден алынған хаттың скан нұсқасы жарамды ма, әлде түпнұсқа болуы керек пе деп сұрадыңыз. | yes | You haven’t mentioned anything about your employer in the information you’ve provided, so there’s no record of a question on that topic. If you have a specific question about your employer, feel free to let me know. |
+| **retrieved** |  | 1/5 |  | 4/5 |  |
+
+### The state the compression produced
+
+{
+  "applicant_id": "A-202",
+  "topic": "Study grant eligibility and required documents",
+  "facts": [
+    "My name is Daniyar Qoshan",
+    "I sent my transcript last week",
+    "My income band is 2 - my family's certificate says so",
+    "I could not upload my id card because the scanner at home broke",
+    "I can only come to the office on Thursdays, I have lab all week otherwise",
+    "My sister Aruzhan applied last year and she is on file too"
+  ],
+  "decisions": [
+    "If all conditions are met you will receive 150 000 tenge",
+    "The decision will be attempted the same day you present your ID on Thursday, but exact timing cannot be guaranteed",
+    "You must show your ID card in the office on Thursday for it to be registered"
+  ],
+  "constraints": [
+    "I can only come to the office on Thursdays",
+    "Cannot upload ID card now because the scanner at home is broken"
+  ],
+  "open_questions": [],
+  "language": "Kazakh, English"
+}
+
+Full replies saved to outputs/medium_results.json

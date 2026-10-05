@@ -1,0 +1,80 @@
+Provider: groq   Model: openai/gpt-oss-20b
+
+=== Run A (never compressed) ===
+   1. sent   294 tokens (2 messages)  Сәлеметсіз бе! My name is Daniyar Qoshan, applicant A-202.
+   2. sent   397 tokens (4 messages)  I sent my transcript last week. Do I qualify for the study g
+   3. sent   472 tokens (6 messages)  My income band is 2 - my family's certificate says so.
+   4. sent   531 tokens (8 messages)  So how much would that come to, if it goes through?
+   5. sent   607 tokens (10 messages)  I could not upload my id card because the scanner at home br
+   6. sent   691 tokens (12 messages)  I can only come to the office on Thursdays, I have lab all w
+   7. sent   766 tokens (14 messages)  Also, does a scanned letter from my employer count, or does 
+   8. sent   831 tokens (16 messages)  Understood. And if I bring the id card on Thursday, will the
+   9. sent   903 tokens (18 messages)  One more thing - my sister Aruzhan applied last year and she
+  10. <compress> skipped
+  11. sent   964 tokens (20 messages)  Sorry, where were we? What is still missing from my file?
+  12. sent  1014 tokens (22 messages)  And what was the amount again?
+  probe Q-1: RETRIEVED  (1099 tokens)  'You are applicant\u202fA‑202.  \nThat’s the number you gave us.'
+  probe Q-2: RETRIEVED  (1097 tokens)  'The document still missing is your ID card.  \nOnce that is on file, we’ll check your GPA a'
+  probe Q-3: RETRIEVED  (1102 tokens)  'Your income band is\u202f2, which corresponds to a grant amount of\u202f150\u202f000\u202ftenge.'
+  probe Q-4: RETRIEVED  (1100 tokens)  'You mentioned you’re only available on Thursdays.  \nSo the office is open for your visit o'
+  probe Q-5: RETRIEVED  (1097 tokens)  'You asked whether a scanned letter from your employer would count, or if the original lett'
+
+=== Run B (compressed) ===
+   1. sent   294 tokens (2 messages)  Сәлеметсіз бе! My name is Daniyar Qoshan, applicant A-202.
+   2. sent   363 tokens (4 messages)  I sent my transcript last week. Do I qualify for the study g
+   3. sent   434 tokens (6 messages)  My income band is 2 - my family's certificate says so.
+   4. sent   501 tokens (8 messages)  So how much would that come to, if it goes through?
+   5. sent   575 tokens (10 messages)  I could not upload my id card because the scanner at home br
+   6. sent   646 tokens (12 messages)  I can only come to the office on Thursdays, I have lab all w
+   7. sent   715 tokens (14 messages)  Also, does a scanned letter from my employer count, or does 
+   8. sent   791 tokens (16 messages)  Understood. And if I bring the id card on Thursday, will the
+   9. sent   864 tokens (18 messages)  One more thing - my sister Aruzhan applied last year and she
+  10. <compress> sent 1268 tokens -> summary did not parse (Expecting value: line 1 column 1 (char 0)); history kept, 18 turns still sent
+  11. sent   922 tokens (20 messages)  Sorry, where were we? What is still missing from my file?
+  12. sent   967 tokens (22 messages)  And what was the amount again?
+  probe Q-1: RETRIEVED  (1006 tokens)  'You are Daniyar\u202fQoshan, applicant number **A‑202**.'
+  probe Q-2: RETRIEVED  (1004 tokens)  'Your GPA and an original ID card are missing. The transcript is on file, but we need those'
+  probe Q-3: RETRIEVED  (1009 tokens)  'You said your income band is\u202f2, which corresponds to a grant of **150\u202f000\u202ftenge**.'
+  probe Q-4: RETRIEVED  (1007 tokens)  'You mentioned you’re available only on Thursdays.  \nThat’s the day we can schedule a time '
+  probe Q-5: RETRIEVED  (1004 tokens)  'You asked whether a scanned letter from your employer would count, or if it has to be the '
+
+### Tokens per call (usage.prompt_tokens from the provider; tiktoken o200k count in brackets)
+
+| Call | A — never compressed | B — compressed at the `compress` turn |
+|---|---|---|
+| 1 | 294 (220) | 294 (220) |
+| 2 | 397 (313) | 363 (279) |
+| 3 | 472 (378) | 434 (340) |
+| 4 | 531 (427) | 501 (397) |
+| 5 | 607 (493) | 575 (461) |
+| 6 | 691 (567) | 646 (522) |
+| 7 | 766 (632) | 715 (581) |
+| 8 | 831 (687) | 791 (647) |
+| 9 | 903 (749) | 864 (710) |
+| 10 | — (`compress` skipped) | 1268 (1194) — the compress call |
+| 11 | 964 (800) | 922 (758) |
+| 12 | 1014 (840) | 967 (793) |
+| **peak** | 1014 | 1268 |
+| **total for the run** | 7470 | 8340 |
+| probes (5 calls, total) | 5495 | 5030 |
+
+After the compress point (calls 11-12): A [964, 1014]  B [922, 967]
+
+### Probes after the conversation
+
+| Probe | Tests | A retrieved? | A answer | B retrieved? | B answer |
+|---|---|---|---|---|---|
+| Q-1 | identity, stated once in turn 1 | yes | You are applicant A‑202.   That’s the number you gave us. | yes | You are Daniyar Qoshan, applicant number **A‑202**. |
+| Q-2 | the missing document, turn 5 | yes | The document still missing is your ID card.   Once that is on file, we’ll check your GPA and finalize the decision. | yes | Your GPA and an original ID card are missing. The transcript is on file, but we need those two documents to finish the eligibility check. |
+| Q-3 | the band from turn 3 and the amount from turn 4 | yes | Your income band is 2, which corresponds to a grant amount of 150 000 tenge. | yes | You said your income band is 2, which corresponds to a grant of **150 000 tenge**. |
+| Q-4 | a constraint the applicant stated in turn 6 and never repeated | yes | You mentioned you’re only available on Thursdays.   So the office is open for your visit on that day.   Let me know what time works best for you. | yes | You mentioned you’re available only on Thursdays.   That’s the day we can schedule a time for you to bring the ID card. |
+| Q-5 | an open question, turn 7, never answered | yes | You asked whether a scanned letter from your employer would count, or if the original letter is required. | yes | You asked whether a scanned letter from your employer would count, or if it has to be the original. The grant does not require an employer letter at all, and for documents that are required (like the ID card) the office normally expects an original copy rather than a scan. |
+| **retrieved** |  | 5/5 |  | 5/5 |  |
+
+Needles checked (case-insensitive, after dropping any the question itself contains): Q-1 ['A-202']; Q-2 ['id_card', 'id card']; Q-3 ['150000', '150,000']; Q-4 ['Thursday']; Q-5 ['letter']
+
+### The state the compression produced
+
+(no state - the compression failed and the history was kept)
+
+Full replies saved to outputs/medium_results.json

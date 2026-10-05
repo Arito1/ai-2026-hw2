@@ -1,8 +1,8 @@
 # HW2 submission
 
-**Name:**
-**Student ID:**
-**Group:**
+**Name:** Sapashev Artur
+**Student ID:** S23068966
+**Group:** CSS-4007 · Artificial Intelligence · Narxoz University
 **Repository:** https://github.com/Arito1/ai-2026-hw2
 
 ## AI tool disclosure
